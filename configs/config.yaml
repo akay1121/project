@@ -1,0 +1,37 @@
+registry:
+  endpoints:
+    - 127.0.0.1:2379
+  username:
+  password:
+  auto_sync_interval:
+  dial_timeout:
+  dial_keep_alive_timeout:
+server:
+  http: # HTTP server, intended for front end requests
+    addr: 0.0.0.0:8000
+    timeout: 1s
+  grpc: # GRPC server, intended for intro-service communication
+    addr: 0.0.0.0:9000
+    timeout: 1s
+data:
+  database: # Relational database
+    # Database driver (Available options include: mysql, postgres, sqlite3)
+    driver: mysql
+    source: root:root@tcp(127.0.0.1:3306)/test?parseTime=True&loc=Local
+  redis:
+    addr: 127.0.0.1:6379
+    read_timeout: 0.2s
+    write_timeout: 0.2s
+telemetry:
+  metrics:
+    enabled: true
+    endpoint: 127.0.0.1
+  traces:
+    enabled: true
+    endpoint: http://127.0.0.1:14268/api/traces
+  log:
+    path: ./logs
+    level: 0
+    max_age: 5
+    max_backups: 10
+    max_size: 100

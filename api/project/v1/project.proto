@@ -1,0 +1,147 @@
+syntax = "proto3";
+// The package name is unique for each service
+package project.v1;
+
+// We shall import the 3rd party protocol buffers to generate both the HTTP server and the gRPC server code.
+import "google/api/annotations.proto";
+// We can tell the generator the field behaviors so that some fields would not appear
+// when regarded as input / output only fields
+import "google/api/field_behavior.proto";
+// Customize the method signature by importing the proto file
+import "google/api/client.proto";
+// We can import this protobuf file to use the timestamp data type in our code
+import "google/protobuf/timestamp.proto";
+// Import the file to return an empty message
+import "google/protobuf/empty.proto";
+// To generate the final product OpenAPI specification file, we shall import the annotations to tell the generator
+// to fill the corresponding fields so as to tell the developer how to use the APIs in a proper way.
+import "openapi/v3/annotations.proto";
+// To employ the validator like what the Spring framework does, we shall import the validate file provided by Envoy
+import "validate/validate.proto";
+// Any other protocol buffers definition files should also be imported explicitly
+import "project/v1/error_reason.proto";
+
+// You have to define the package names using the option keyword to make the Protocol Buffers compiler
+// follow the standard and generate the corresponding code.
+// NOTE: You should always place these lines in your code.
+
+// The Golang package name is defined with two parts:
+//  - the former is the full path of the package name
+//  - the latter is the explicit name for this package
+option go_package = "project/api/project/v1;v1";
+option java_multiple_files = true; // Separate .java files will be generated for each of the Java classes/enums/etc.
+option java_package = "project.v1"; // The package which the generated code will be placed in
+option objc_class_prefix = "APIProjectV1"; // Objective-C class prefix
+
+// You should provide the information of this service by using the option (openapi.v3.document)
+option (openapi.v3.document) = {
+  info: {
+    title: "Project Management Service"
+    description: "A basic project management service "
+    version: "1.0.0"
+  }
+};
+
+service ProjectManagement {
+// CRUD Operations
+    rpc CreateProject(CreateProjectRequest) returns (CreateProjectResponse) {
+option (google.api.http) = {
+post: "/terminal"
+    body: "*"
+    };
+    }
+
+rpc GetProject(GetProjectRequest) returns (Project) {
+option (google.api.http) = {
+get: "/terminal/{project_id}"
+    };
+    }
+
+rpc UpdateProject(UpdateProjectRequest) returns (UpdateProjectResponse) {
+option (google.api.http) = {
+put: "/terminal/{project_id}"
+    body: "*"
+    };
+    }
+
+rpc DeleteProject(DeleteProjectRequest) returns (DeleteProjectResponse) {
+option (google.api.http) = {
+delete: "/terminal/{project_id}"
+    };
+    }
+
+// Additional Queries
+    rpc SearchBranchProjects(SearchBranchProjectsRequest) returns (SearchBranchProjectsResponse) {
+option (google.api.http) = {
+get: "/terminal/branches/{parent_proj_id}"
+    };
+    }
+
+rpc FindNearbyProjects(FindNearbyProjectsRequest) returns (FindNearbyProjectsResponse) {
+option (google.api.http) = {
+get: "/terminal/nearby"
+
+    };
+    }
+    }
+
+message Project {
+  string project_id = 1 [(openapi.v3.property).description = "Unique identifier of the project"];
+  string parent_proj_id = 2 [(openapi.v3.property).description = "Identifier of the parent project"];
+  string desc = 3 [(openapi.v3.property).description = "Optional description of the project"];
+  string location = 4 [(openapi.v3.property).description = "Geographical location (province, city, district)"];
+  GeoPoint coordinate = 5 [(openapi.v3.property).description = "Geographical coordinates (latitude, longitude)"];
+  google.protobuf.Timestamp create_time = 6 [(openapi.v3.property).description = "Timestamp when the project was created"];
+  google.protobuf.Timestamp last_update = 7 [(openapi.v3.property).description = "Timestamp when the project was last updated"];
+}
+
+message GeoPoint {
+  double latitude = 1 [(openapi.v3.property).description = "Latitude of the location"];
+  double longitude = 2 [(openapi.v3.property).description = "Longitude of the location"];
+}
+
+message CreateProjectRequest {
+  Project project = 1 [(openapi.v3.property).description = "Project details"];
+}
+
+message CreateProjectResponse {
+  string project_id = 1 [(openapi.v3.property).description = "ID of the newly created project"];
+}
+
+message GetProjectRequest {
+  string project_id = 1 [(openapi.v3.property).description = "ID of the project to retrieve"];
+}
+
+message UpdateProjectRequest {
+  string project_id = 1 [(openapi.v3.property).description = "ID of the project to update"];
+  Project project = 2 [(openapi.v3.property).description = "Updated project details"];
+}
+
+message UpdateProjectResponse {
+  bool success = 1 [(openapi.v3.property).description = "Indicates whether the update was successful"];
+}
+
+message DeleteProjectRequest {
+  string project_id = 1 [(openapi.v3.property).description = "ID of the project to delete"];
+}
+
+message DeleteProjectResponse {
+  bool success = 1 [(openapi.v3.property).description = "Indicates whether the deletion was successful"];
+}
+
+message SearchBranchProjectsRequest {
+  string parent_proj_id = 1 [(openapi.v3.property).description = "Parent project ID to search branches for"];
+}
+
+message SearchBranchProjectsResponse {
+  repeated Project branch_projects = 1 [(openapi.v3.property).description = "List of branch projects"];
+}
+
+message FindNearbyProjectsRequest {
+  GeoPoint current_location = 1 [(openapi.v3.property).description = "User's current location"];
+  double radius = 2 [(openapi.v3.property).description = "Radius in kilometers to search within"];
+}
+
+message FindNearbyProjectsResponse {
+  repeated Project nearby_projects = 1 [(openapi.v3.property).description = "List of nearby projects"];
+}

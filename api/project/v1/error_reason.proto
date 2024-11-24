@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package project.v1;
+
+// This file defines the enumeration of error reasons. For more detailed information on how to code
+// properly in Protocol Buffers, please refer to the user.proto file, where it provides a basic example
+// of how to declare a CRUD service.
+
+// Import the error related extensions
+import "errors/errors.proto";
+
+option go_package = "project/api/project/v1;v1";
+option java_multiple_files = true;
+option java_package = "project.v1";
+option objc_class_prefix = "APIProjectV1";
+
+enum ErrorReason {
+  // Define the default code for the enum
+  option (errors.default_code) = 200;
+
+  // Here we clarify the difference between the enum values and the error codes:
+  // Enum values are only used to indicate its uniqueness in the enum type;
+  // Error codes are codes that truly used in practice, rather than the raw enum values themselves.
+  // You should refer to the HTTP status code to design your error code:
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+
+  OK = 0 [(errors.code) = 200];
+  PROJECT_NOT_FOUND = 1 [(errors.code) = 404];
+  INVALID_PARENT = 2 [(errors.code) = 404];
+  MALFORMED_INPUT = 3 [(errors.code) = 400];
+}

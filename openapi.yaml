@@ -1,0 +1,220 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Project Management Service
+    description: 'A basic project management service '
+    version: 1.0.0
+paths:
+    /terminal:
+        post:
+            tags:
+                - ProjectManagement
+            description: CRUD Operations
+            operationId: ProjectManagement_CreateProject
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/project.v1.CreateProjectRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/project.v1.CreateProjectResponse'
+    /terminal/branches/{parentProjId}:
+        get:
+            tags:
+                - ProjectManagement
+            description: Additional Queries
+            operationId: ProjectManagement_SearchBranchProjects
+            parameters:
+                - name: parentProjId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/project.v1.SearchBranchProjectsResponse'
+    /terminal/nearby:
+        get:
+            tags:
+                - ProjectManagement
+            operationId: ProjectManagement_FindNearbyProjects
+            parameters:
+                - name: currentLocation.latitude
+                  in: query
+                  schema:
+                    type: number
+                    format: double
+                - name: currentLocation.longitude
+                  in: query
+                  schema:
+                    type: number
+                    format: double
+                - name: radius
+                  in: query
+                  schema:
+                    type: number
+                    format: double
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/project.v1.FindNearbyProjectsResponse'
+    /terminal/{projectId}:
+        get:
+            tags:
+                - ProjectManagement
+            operationId: ProjectManagement_GetProject
+            parameters:
+                - name: projectId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/project.v1.Project'
+        put:
+            tags:
+                - ProjectManagement
+            operationId: ProjectManagement_UpdateProject
+            parameters:
+                - name: projectId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/project.v1.UpdateProjectRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/project.v1.UpdateProjectResponse'
+        delete:
+            tags:
+                - ProjectManagement
+            operationId: ProjectManagement_DeleteProject
+            parameters:
+                - name: projectId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/project.v1.DeleteProjectResponse'
+components:
+    schemas:
+        project.v1.CreateProjectRequest:
+            type: object
+            properties:
+                project:
+                    $ref: '#/components/schemas/project.v1.Project'
+        project.v1.CreateProjectResponse:
+            type: object
+            properties:
+                projectId:
+                    type: string
+                    description: ID of the newly created project
+        project.v1.DeleteProjectResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                    description: Indicates whether the deletion was successful
+        project.v1.FindNearbyProjectsResponse:
+            type: object
+            properties:
+                nearbyProjects:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/project.v1.Project'
+                    description: List of nearby projects
+        project.v1.GeoPoint:
+            type: object
+            properties:
+                latitude:
+                    type: number
+                    description: Latitude of the location
+                    format: double
+                longitude:
+                    type: number
+                    description: Longitude of the location
+                    format: double
+        project.v1.Project:
+            type: object
+            properties:
+                projectId:
+                    type: string
+                    description: Unique identifier of the project
+                parentProjId:
+                    type: string
+                    description: Identifier of the parent project
+                desc:
+                    type: string
+                    description: Optional description of the project
+                location:
+                    type: string
+                    description: Geographical location (province, city, district)
+                coordinate:
+                    $ref: '#/components/schemas/project.v1.GeoPoint'
+                createTime:
+                    type: string
+                    description: Timestamp when the project was created
+                    format: date-time
+                lastUpdate:
+                    type: string
+                    description: Timestamp when the project was last updated
+                    format: date-time
+        project.v1.SearchBranchProjectsResponse:
+            type: object
+            properties:
+                branchProjects:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/project.v1.Project'
+                    description: List of branch projects
+        project.v1.UpdateProjectRequest:
+            type: object
+            properties:
+                projectId:
+                    type: string
+                    description: ID of the project to update
+                project:
+                    $ref: '#/components/schemas/project.v1.Project'
+        project.v1.UpdateProjectResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                    description: Indicates whether the update was successful
+tags:
+    - name: ProjectManagement
